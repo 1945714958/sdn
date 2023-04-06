@@ -1,8 +1,8 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import { GlobalStore } from "@/stores";
-// import { AuthStore } from "@/stores/modules/auth";
+import { AuthStore } from "@/stores/modules/auth";
 import { LOGIN_URL, ROUTER_WHITE_LIST } from "@/config/config";
-// import { initDynamicRouter } from "@/routers/modules/dynamicRouter";
+import { initDynamicRouter } from "@/routers/modules/dynamicRouter";
 import { staticRouter, errorRouter } from "@/routers/modules/staticRouter";
 import NProgress from "@/config/nprogress";
 
@@ -44,8 +44,8 @@ router.beforeEach(async (to, from, next) => {
 
 	// 3.判断是访问登陆页，有 Token 就在当前页面，没有 Token 重置路由并放行到登陆页
 	if (to.path === LOGIN_URL) {
-		// if (globalStore.token) return next(from.fullPath);
-		// resetRouter();
+		if (globalStore.token) return next(from.fullPath);
+		resetRouter();
 		return next();
 	}
 
@@ -56,12 +56,12 @@ router.beforeEach(async (to, from, next) => {
 	if (!globalStore.token) return next({ path: LOGIN_URL, replace: true });
 
 	// 6.如果没有菜单列表，就重新请求菜单列表并添加动态路由
-	// const authStore = AuthStore();
-	// authStore.setRouteName(to.name as string);
-	// if (!authStore.authMenuListGet.length) {
-	// 	// await initDynamicRouter();
-	// 	return next({ ...to, replace: true });
-	// }
+	const authStore = AuthStore();
+	authStore.setRouteName(to.name as string);
+	if (!authStore.authMenuListGet.length) {
+		await initDynamicRouter();
+		return next({ ...to, replace: true });
+	}
 
 	// 7.正常访问页面
 	next();
@@ -71,11 +71,11 @@ router.beforeEach(async (to, from, next) => {
  * @description 重置路由
  * */
 export const resetRouter = () => {
-	// const authStore = AuthStore();
-	// authStore.flatMenuListGet.forEach(route => {
-	// 	const { name } = route;
-	// 	if (name && router.hasRoute(name)) router.removeRoute(name);
-	// });
+	const authStore = AuthStore();
+	authStore.flatMenuListGet.forEach(route => {
+		const { name } = route;
+		if (name && router.hasRoute(name)) router.removeRoute(name);
+	});
 };
 
 /**

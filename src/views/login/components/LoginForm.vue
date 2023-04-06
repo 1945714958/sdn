@@ -11,8 +11,7 @@
 			</el-input>
 		</el-form-item>
 		<el-form-item prop="password">
-			<el-input type="password" v-model="loginForm.password" placeholder="密码：123456" show-password
-				autocomplete="new-password">
+			<el-input type="password" v-model="loginForm.password" placeholder="密码：123456" show-password autocomplete="new-password">
 				<template #prefix>
 					<el-icon class="el-input__icon">
 						<lock />
@@ -44,14 +43,11 @@ import { HOME_URL } from "@/config/config";
 import { CircleClose, UserFilled } from "@element-plus/icons-vue";
 import type { ElForm } from "element-plus";
 // import md5 from "js-md5";
-import { munuRouters } from "@/routers/modules/menuRouter";
-import { AuthStore } from "@/stores/modules/auth";
 
 const router = useRouter();
 const tabsStore = TabsStore();
 const keepAlive = KeepAliveStore();
 const globalStore = GlobalStore();
-const authStore = AuthStore();
 
 // 定义 formRef（校验规则）
 type FormInstance = InstanceType<typeof ElForm>;
@@ -76,8 +72,6 @@ const login = (formEl: FormInstance | undefined) => {
 
 			// 2.添加动态路由
 			// await initDynamicRouter();
-			authStore.setAuthMenuList(munuRouters);
-			console.log(authStore.authMenuListGet);
 
 			// 3.清空 tabs、keepAlive 保留的数据
 			tabsStore.closeMultipleTab();
