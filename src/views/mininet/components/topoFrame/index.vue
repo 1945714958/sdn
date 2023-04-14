@@ -5,7 +5,9 @@
  * index.vue
 -->
 <template>
-	<div class="container"></div>
+	<div class="container card">
+		<iframe class="iframe" width="80%" height="80%" src="http://127.0.0.1:8080/" scrolling="yes"></iframe>
+	</div>
 </template>
 
 <script setup lang="ts"></script>
@@ -14,6 +16,9 @@
 .container {
 	width: 100%;
 	height: 100%;
-	background-color: blue;
+	.iframe {
+		margin: 0 auto;
+		display: block;
+	}
 }
 </style>

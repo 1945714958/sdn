@@ -71,10 +71,10 @@
 					</div>
 				</el-header>
 				<el-empty v-if="status == 'empty'" description="请选择左边操作菜单" />
-				<table-list v-if="status == 'list'" />
+
 				<basic-form v-if="status == 'form'" :formType="FormType" />
 				<topo-frame v-if="status == 'frame'" />
-				<switch-table @flowtable="flowtable" v-if="status == 'switch'" />
+				<switch-table ref="switchtable" v-if="status == 'switch'" />
 				<add-flow v-if="status == 'addflow'" />
 				<default-view v-if="status == 'default'" />
 			</el-container>
@@ -84,7 +84,7 @@
 
 <script setup lang="ts">
 import { Setting } from "@element-plus/icons-vue";
-import tableList from "./components/tableList/index.vue";
+
 import basicForm from "@/views/form/basicForm/index.vue";
 import topoFrame from "./components/topoFrame/index.vue";
 import switchTable from "./components/switchTable/index.vue";
@@ -92,6 +92,7 @@ import addFlow from "./components/addFlow/index.vue";
 import defaultView from "./components/defaultCom/index.vue";
 import { ref } from "vue";
 
+const switchtable = ref();
 const status = ref("empty");
 const FormType = ref("addHost");
 const changeForm = (formType: string) => {
@@ -101,11 +102,9 @@ const changeForm = (formType: string) => {
 const topoiFrame = () => {
 	status.value = "frame";
 };
-const flowtable = () => {
-	status.value = "list";
-};
 const switchList = () => {
 	status.value = "switch";
+	switchtable.value.goback();
 };
 const addFlows = () => {
 	status.value = "addflow";

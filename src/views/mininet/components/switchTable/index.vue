@@ -5,35 +5,65 @@
  * index.vue
 -->
 <template>
-	<div class="container">
-		<el-table :data="tableData" style="width: 100%">
+	<div class="container card">
+		<el-table v-if="detail" :data="flowTable" style="width: 100%">
 			<el-table-column fixed prop="id" label="交换机" />
 			<el-table-column fixed="right" label="Operations" width="200">
-				<template #default>
-					<el-button link type="primary" size="small" @click="handleClick">查看流表</el-button>
-					<el-button link type="primary" size="small">清空流表</el-button>
+				<template #default="scope">
+					<el-button link type="primary" size="small" @click="handleClick(scope.row.id)">查看流表</el-button>
+					<el-button link type="primary" size="small" @click="clear(scope.row.id)">清空流表</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
+		<table-list v-else :id="activeId" />
 	</div>
 </template>
 
 <script setup lang="ts">
-import { defineEmits } from "vue";
-const emit = defineEmits(["flowtable"]);
+import { onMounted, ref, defineExpose } from "vue";
+import tableList from "../tableList/index.vue";
+import { getSwitchs, clearFlowTable } from "@/api/modules/topo";
+import { ElMessage } from "element-plus";
 
-const tableData = [
-	{
-		id: "1"
-	},
-	{
-		id: "2"
-	}
-];
+const flowTable = ref([{ id: 1 }]);
+const activeId = ref();
+const detail = ref(true);
+onMounted(() => {
+	getSwitchs().then((res: any) => {
+		flowTable.value = res.data.map((item: any) => {
+			return {
+				id: item
+			};
+		});
+	});
+});
 
-const handleClick = () => {
-	emit("flowtable");
+const handleClick = (id: number) => {
+	activeId.value = id;
+	detail.value = false;
 };
+const clear = (id: number) => {
+	clearFlowTable({ id: id })
+		.then((res: any) => {
+			if (res.status == 200) {
+				ElMessage.success("清空成功！当前交换机流表已清空");
+			}
+		})
+		.catch(() => {
+			ElMessage.error("清空失败！请检查交换机是否正确！");
+		});
+};
+const goback = () => {
+	detail.value = true;
+};
+defineExpose({
+	goback
+});
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.container {
+	width: 100%;
+	height: 100%;
+}
+</style>

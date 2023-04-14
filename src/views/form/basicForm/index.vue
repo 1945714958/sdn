@@ -37,10 +37,10 @@
 
 <script setup lang="ts" name="basicForm">
 import { form } from "@/api/interface/form";
-import { ElMessage } from "element-plus";
 import { ref, reactive, defineProps, watch } from "vue";
 import type { FormInstance } from "element-plus";
-import {getUserList} from '@/api/modules/topo'
+import { AddHost, DelHost, AddLink, DelLink, AddSwitch, DelSwitch } from "@/api/modules/topo";
+import { Operation } from "@/utils/mininet/operation";
 // do not use same name with ref
 type Prop = {
 	formType: string;
@@ -53,6 +53,7 @@ const form = reactive<form>({
 	host_1_Name: "",
 	host_2_Name: ""
 });
+const formRef = ref<FormInstance>();
 
 watch(
 	() => props.formType,
@@ -65,9 +66,20 @@ watch(
 );
 
 const onSubmit = () => {
-	ElMessage.success("提交的数据为 : " + JSON.stringify(form));
+	if (props.formType == "addHost") {
+		Operation("添加主机", form, AddHost);
+	} else if (props.formType == "delHost") {
+		Operation("删除主机", form, DelHost);
+	} else if (props.formType == "addSwitch") {
+		Operation("添加交换机", form, AddSwitch);
+	} else if (props.formType == "delSwitch") {
+		Operation("删除交换机", form, DelSwitch);
+	} else if (props.formType == "addLink") {
+		Operation("添加链路", form, AddLink);
+	} else if (props.formType == "delLink") {
+		Operation("删除链路", form, DelLink);
+	}
 };
-const formRef = ref<FormInstance>();
 const resetForm = (formEl: FormInstance | undefined) => {
 	if (!formEl) return;
 	formEl.resetFields();

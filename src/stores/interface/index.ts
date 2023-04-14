@@ -54,3 +54,7 @@ export interface AuthState {
 export interface keepAliveState {
 	keepAliveName: string[];
 }
+/* keepAliveState */
+export interface MininetState {
+	isImport: boolean;
+}

@@ -8,7 +8,7 @@
 	<el-main>
 		<el-scrollbar>
 			<el-table :data="tableData">
-				<el-table-column prop="id" label="流表id" width="140" />
+				<el-table-column type="index" />
 				<el-table-column prop="data" label="流表数据（JSON格式)" />
 			</el-table>
 		</el-scrollbar>
@@ -16,12 +16,29 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-const item = {
-	id: 0,
-	data: "{'dasdsa':'dsa'}"
+import { ref, defineProps, onMounted } from "vue";
+import { getFlowTable } from "@/api/modules/topo";
+import { ElMessage } from "element-plus";
+type Prop = {
+	id: any;
 };
-const tableData = ref(Array.from({ length: 20 }).fill(item));
+const tableData = ref([]);
+const props = defineProps<Prop>();
+onMounted(() => {
+	getFlowTable(props.id)
+		.then((res: any) => {
+			if (res.status == 200) {
+				tableData.value = res.data[Object.keys(res.data)[0]].map((item: any) => {
+					return {
+						data: item
+					};
+				});
+			}
+		})
+		.catch(() => {
+			ElMessage.error("获取流表失败！");
+		});
+});
 </script>
 
 <style scoped lang="scss">

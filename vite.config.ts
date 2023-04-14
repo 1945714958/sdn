@@ -43,14 +43,14 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
 			// 跨域代理配置
 			proxy: {
 				"/api": {
-					target: "http://localhost:8080",
+					target: "http://localhost:8080/",
 					// target: "https://mock.mengxuegu.com/mock/629d727e6163854a32e8307e", // easymock
 					// target: "https://www.fastmock.site/mock/f81e8333c1a9276214bcdbc170d9e0a0", // fastmock
 					changeOrigin: true,
 					rewrite: path => path.replace(/^\/api/, "")
 				},
 				"/topo": {
-					target: "http://localhost:2345",
+					target: "http://localhost:2345/api/",
 					// target: "https://mock.mengxuegu.com/mock/629d727e6163854a32e8307e", // easymock
 					// target: "https://www.fastmock.site/mock/f81e8333c1a9276214bcdbc170d9e0a0", // fastmock
 					changeOrigin: true,
