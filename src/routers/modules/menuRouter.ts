@@ -32,6 +32,20 @@ export const munuRouters: Menu.MenuOptions[] = [
 		}
 	},
 	{
+		path: "/topo/index",
+		name: "topo",
+		component: "/topo/index",
+		meta: {
+			icon: "HomeFilled",
+			title: "topo",
+			isLink: "",
+			isHide: false,
+			isFull: false,
+			isAffix: true,
+			isKeepAlive: true
+		}
+	},
+	{
 		path: "/dataScreen",
 		name: "dataScreen",
 		component: "/dataScreen/index",
