@@ -1,3 +1,5 @@
+import { DataSet } from "vis-data/peer";
+
 /* GlobalState */
 export interface GlobalState {
 	token: string;
@@ -54,7 +56,75 @@ export interface AuthState {
 export interface keepAliveState {
 	keepAliveName: string[];
 }
-/* keepAliveState */
 export interface MininetState {
 	isImport: boolean;
+}
+
+export type Host = {
+	label?: string;
+	name: string;
+	ip: string;
+	pid: number;
+	mac: string;
+	intfsName: string;
+};
+export type Hosts = {
+	[key: string]: Host;
+};
+export type Intf = {
+	name: string;
+	mac: string;
+	ip: string;
+};
+export type Switch = {
+	label?: string;
+	name: string;
+	pid: number;
+	intfs: Intf[];
+};
+export type Switches = {
+	[key: string]: Switch;
+};
+
+type LinkNode = {
+	name: string;
+	node: string;
+	ip: string;
+	mac: string;
+};
+
+export type Link = {
+	name: string;
+	intf1: LinkNode;
+	intf2: LinkNode;
+};
+
+export type links = {
+	[key: string]: Link;
+};
+export interface TopoState {
+	Hosts: Hosts;
+	Switches: Switches;
+	Links: links;
+	currentHost: Host;
+	currentSwitch: Switch;
+	currentPort: {
+		name: string;
+		label?: string;
+		mac?: string;
+	};
+	nodes: DataSet<{
+		id: any;
+		label: string;
+		group: string;
+		x?: number;
+		y?: number;
+		name?: string;
+		pid?: number;
+		intfs?: Intf[];
+		ip?: string;
+		mac?: string;
+		intfsName?: string;
+	}>;
+	edges: DataSet<{ id: any; from: any; to: any }>;
 }

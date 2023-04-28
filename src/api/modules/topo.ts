@@ -25,9 +25,7 @@ export const defaultTopo = () => {
 export const getFlowTable = (params: { id: number }) => {
 	return http.get(`/api/stats/flow/${params.id}`);
 };
-export const getSwitchs = () => {
-	return http.get(`/api/stats/switches`);
-};
+
 export const clearFlowTable = (params: { id: number }) => {
 	return http.delete(`/api/stats/flowentry/clear/${params.id}`);
 };
@@ -36,4 +34,15 @@ export const addFlowTable = (params: { flow: string }) => {
 };
 export const createTopo = () => {
 	return http.get(`/topo/first_start`);
+};
+
+export const getSwitchs = () => {
+	return http.get(`/topo/switches`);
+};
+export const getHost = () => {
+	return http.get(`/topo/hosts`);
+};
+
+export const getLinks = () => {
+	return http.get(`/topo/links`);
 };
