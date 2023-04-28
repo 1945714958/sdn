@@ -1,4 +1,5 @@
 import { DataSet } from "vis-data/peer";
+import { Edge } from "vis-network";
 
 /* GlobalState */
 export interface GlobalState {
@@ -103,6 +104,8 @@ export type links = {
 	[key: string]: Link;
 };
 export interface TopoState {
+	currentLinks: Array<Edge>;
+	editBool: Boolean;
 	Hosts: Hosts;
 	Switches: Switches;
 	Links: links;

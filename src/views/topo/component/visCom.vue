@@ -27,16 +27,14 @@
 			</el-button>
 		</el-row>
 		<dialog-view ref="dialog" />
-		<flow-table ref="flowtable" :id="id" />
+		<flow-table ref="flowtable" :id="pid" />
 		<div id="mynetwork" class="child"></div>
 	</div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from "vue";
-import { DataSet } from "vis-data/peer";
 import { Network } from "vis-network/peer";
-import { ref } from "vue";
+import { ref, defineExpose } from "vue";
 import { Delete, Sort } from "@element-plus/icons-vue";
 
 import controllerImgLight from "@/assets/network/controller.dark.svg";
@@ -47,67 +45,12 @@ import { ElMessage } from "element-plus";
 import dialogView from "./dialog.vue";
 import flowTable from "./flowTable.vue";
 import { TopoStore } from "@/stores/modules/topo";
-import { Intf } from "@/stores/interface";
 
 const topoState = TopoStore();
-
-const getIndex = () => {
-	let idx = 1114;
-	return function () {
-		return idx++;
-	};
-};
-topoState.getAll(callback);
-
-let idx = getIndex();
-function callback() {
-	for (let i of topoState.HostsGet) {
-		let portId = idx();
-		const names = i.intfsName.split("-");
-		nodes.add({ ...i, id: portId, label: names[0], group: "host" });
-		nodes.add({ ...i, id: i.intfsName, label: i.intfsName, group: "port" });
-		edges.add({ id: new Date().getTime(), from: i.intfsName, to: portId });
-	}
-	for (let i of topoState.SwitchesGet) {
-		const names = i.intfs[1].name.split("-");
-		nodes.add({ ...i, id: i.pid, label: names[0], group: "switch" });
-		edges.add({ id: new Date().getTime(), from: 1, to: i.pid });
-
-		i.intfs.map(item => {
-			if (item.name != "lo") {
-				nodes.add({ ...item, id: item.name, label: item.name, group: "port" });
-				edges.add({ id: new Date().getTime(), from: i.pid, to: item.name });
-			}
-		});
-	}
-	for (let i of topoState.LinksGet) {
-		let from = i.intf1.name;
-		let to = i.intf2.name;
-		if (i.intf2.name.startsWith("s")) {
-			from = i.intf2.name;
-			to = i.intf1.name;
-		}
-		edges.add({ id: new Date().getTime(), from: from, to: to });
-	}
-}
+console.log(topoState.NodesGet);
 
 let network;
 let newItem;
-
-let nodes = new DataSet<{
-	id: any;
-	label: string;
-	group: string;
-	x?: number;
-	y?: number;
-	name?: string;
-	pid?: number;
-	intfs?: Intf[];
-	ip?: string;
-	mac?: string;
-	intfsName?: string;
-}>([{ id: 1, label: "c0", group: "controller" }]);
-let edges = new DataSet([]);
 
 const visCon = ref();
 
@@ -175,14 +118,19 @@ let options = {
 		addNode: async (node, callback) => {
 			await editer(newItem);
 			if (editBool.value) {
-				nodes.add(newItem);
+				topoState.addNodes(newItem);
 			}
+			topoState.setEditBool(false);
 			callback();
 		},
 		addEdge: async (node, callback) => {
 			callback();
 			node.id = new Date().getTime();
-			edges.add(node);
+			topoState.addCurEdge(node);
+			if (topoState.CurLinksGet.length == 2) {
+				topoState.ADDLINKS();
+			}
+			topoState.addEdges(node);
 		},
 		editNode: async (node, callback) => {
 			await editer(node);
@@ -263,6 +211,7 @@ const add = (type: string) => {
 	}
 	const id = new Date().getTime();
 	newItem = { id, label, group: type };
+	topoState.setEditBool(true);
 	network.addNodeMode();
 };
 
@@ -287,18 +236,19 @@ const editer = async node => {
 };
 
 const flowtable = ref();
-const id = ref(0);
+const pid = ref(0);
 const dialog = ref();
 
 const changeShowFlowTable = () => {
 	flowtable.value.changeShow();
 };
 
-onMounted(() => {
+const init = () => {
 	visCon.value = document.getElementById("mynetwork");
+
 	let data = {
-		nodes: nodes,
-		edges: edges
+		nodes: topoState.NodesGet,
+		edges: topoState.EdgesGet
 	};
 
 	// 初始化关系图
@@ -310,10 +260,14 @@ onMounted(() => {
 	network.on("oncontext", e => {
 		const id = network.getNodeAt({ x: e.pointer.DOM.x, y: e.pointer.DOM.y });
 		id && network.selectNodes([id], true);
-		const res = nodes.map(item => item.id == id && item.group == "switch");
+		const res = topoState.NodesGet.map(item => item.id == id && item.group == "switch");
 		if (res.indexOf(true) != -1) changeShowFlowTable();
+
 		e.event.preventDefault();
 	});
+};
+defineExpose({
+	init
 });
 </script>
 

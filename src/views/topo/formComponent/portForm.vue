@@ -9,14 +9,14 @@
 		<el-form-item label="端口名称">
 			<el-input v-model="formLabelAlign.name" />
 		</el-form-item>
-		<el-form-item label="mac地址">
+		<el-form-item v-if="!topoState.editBool" label="mac地址">
 			<el-input v-model="formLabelAlign.mac" />
 		</el-form-item>
 	</el-form>
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from "vue";
+import { ref, watch, defineExpose } from "vue";
 import { TopoStore } from "@/stores/modules/topo";
 
 const topoState = TopoStore();
@@ -25,7 +25,6 @@ watch(
 	() => topoState.currentPortGet,
 	NewVal => {
 		formLabelAlign.value.name = NewVal.label;
-		formLabelAlign.value.mac = NewVal.mac;
 	},
 	{
 		deep: true
@@ -35,6 +34,9 @@ watch(
 const formLabelAlign = ref({
 	name: topoState.currentPortGet.label,
 	mac: topoState.currentPortGet.mac
+});
+defineExpose({
+	formLabelAlign
 });
 </script>
 

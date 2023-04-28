@@ -5,16 +5,16 @@
  * flowTable.vue
 -->
 <template>
-	<el-drawer v-model="table" title="I have a nested table inside!" direction="rtl" size="50%">
+	<el-drawer v-model="table" direction="rtl" size="50%">
 		<el-table :data="gridData">
-			<el-table-column property="date" label="Date" width="150" />
-			<el-table-column property="name" label="Name" width="200" />
-			<el-table-column property="address" label="Address" />
+			<el-table-column property="date" label="流表项" />
 		</el-table>
 	</el-drawer>
 </template>
 
 <script setup lang="ts">
+import { getFlowTable } from "@/api/modules/topo";
+import { ElMessage } from "element-plus";
 import { ref, defineProps, defineExpose } from "vue";
 
 type Prop = {
@@ -25,30 +25,22 @@ const props = defineProps<Prop>();
 console.log(props);
 
 const table = ref(false);
-const gridData = [
-	{
-		date: "2016-05-02",
-		name: "Peter Parker",
-		address: "Queens, New York City"
-	},
-	{
-		date: "2016-05-04",
-		name: "Peter Parker",
-		address: "Queens, New York City"
-	},
-	{
-		date: "2016-05-01",
-		name: "Peter Parker",
-		address: "Queens, New York City"
-	},
-	{
-		date: "2016-05-03",
-		name: "Peter Parker",
-		address: "Queens, New York City"
-	}
-];
+const gridData = ref([]);
 const changeShow = () => {
 	table.value = !table.value;
+	if (table.value) {
+		getFlowTable({ id: props.id })
+			.then((res: any) => {
+				gridData.value = res[Object.keys(res)[0]].map((item: any) => {
+					return {
+						data: JSON.stringify(item)
+					};
+				});
+			})
+			.catch(() => {
+				ElMessage.error("获取流表失败！");
+			});
+	}
 };
 defineExpose({
 	changeShow

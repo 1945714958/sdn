@@ -1,11 +1,12 @@
 import { defineStore } from "pinia";
 import { TopoState } from "../interface";
 import piniaPersistConfig from "@/config/piniaPersist";
-import { getHost, getSwitchs, getLinks } from "@/api/modules/topo";
+import { getHost, getSwitchs, getLinks, AddHost } from "@/api/modules/topo";
 import { DataSet } from "vis-data/peer";
 export const TopoStore = defineStore({
 	id: "TopoStore",
 	state: (): TopoState => ({
+		editBool: false,
 		nodes: new DataSet([]),
 		edges: new DataSet([]),
 		Hosts: {},
@@ -13,9 +14,11 @@ export const TopoStore = defineStore({
 		Links: {},
 		currentHost: null,
 		currentSwitch: null,
-		currentPort: null
+		currentPort: null,
+		currentLinks: []
 	}),
 	getters: {
+		editBoolGet: state => state.editBool,
 		HostsGet: state => state.Hosts,
 		SwitchesGet: state => state.Switches,
 		LinksGet: state => state.Links,
@@ -23,9 +26,23 @@ export const TopoStore = defineStore({
 		currentSwitchGet: state => state.currentSwitch,
 		currentPortGet: state => state.currentPort,
 		NodesGet: state => state.nodes,
-		EdgesGet: state => state.edges
+		EdgesGet: state => state.edges,
+		CurLinksGet: state => state.currentLinks
 	},
 	actions: {
+		ADDLINKS() {},
+		ADDHOST(edges) {
+			this.nodes.forEach(element => {
+				if (element.id == edges.from && element.group == "switch") {
+					const item = {
+						name: this.currentHost.name,
+						ip: this.currentHost.ip,
+						switchName: element.name
+					};
+					AddHost(item);
+				}
+			});
+		},
 		async getAll(callback) {
 			await Promise.all([getHost(), getSwitchs(), getLinks()]).then(values => {
 				const results: any = values.map(item => {
@@ -62,22 +79,25 @@ export const TopoStore = defineStore({
 			this.currentPort = item;
 		},
 		setNodes(Nodes) {
-			Nodes.map(item => {
-				console.log(item);
-
-				this.nodes.add(item);
-			});
+			this.nodes = Nodes;
 		},
 		setEdges(Edges) {
-			Edges.map(item => {
-				this.edges.add(item);
-			});
+			this.edges = Edges;
 		},
 		addNodes(item) {
 			this.nodes.add(item);
 		},
 		addEdges(item) {
 			this.edges.add(item);
+		},
+		setEditBool(bool) {
+			this.editBool = bool;
+		},
+		addCurEdge(edge) {
+			this.currentLinks.add(edge);
+		},
+		clearCurEdge() {
+			this.currentLinks = [];
 		}
 	},
 	persist: piniaPersistConfig("TopoStore")

@@ -9,14 +9,11 @@
 		<el-form-item label="交换机名称">
 			<el-input v-model="formLabelAlign.name" />
 		</el-form-item>
-		<el-form-item label="pid">
-			<el-input v-model="formLabelAlign.pid" />
-		</el-form-item>
 	</el-form>
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from "vue";
+import { ref, watch, defineExpose } from "vue";
 import { TopoStore } from "@/stores/modules/topo";
 
 const topoState = TopoStore();
@@ -31,8 +28,10 @@ watch(
 	}
 );
 const formLabelAlign = ref({
-	name: topoState.currentSwitchGet.label,
-	pid: topoState.currentSwitchGet.pid
+	name: topoState.currentSwitchGet.label
+});
+defineExpose({
+	formLabelAlign
 });
 </script>
 

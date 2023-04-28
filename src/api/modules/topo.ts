@@ -7,10 +7,10 @@ export const DelHost = (params: form) => {
 	return http.get(`/topo/deletehost/${params.name}`);
 };
 export const AddLink = (params: form) => {
-	return http.get(`/topo/addlink/${params.host_1_Name}/${params.host_2_Name}`, params);
+	return http.get(`/topo/addlink/${params.Name1}/${params.Name2}`);
 };
 export const DelLink = (params: form) => {
-	return http.get(`/topo/dellink/${params.host_1_Name}/${params.host_2_Name}`, params);
+	return http.get(`/topo/dellink/${params.Name1}/${params.Name2}`);
 };
 export const AddSwitch = (params: form) => {
 	return http.get(`/topo/addswitch/${params.switchName}`, params);

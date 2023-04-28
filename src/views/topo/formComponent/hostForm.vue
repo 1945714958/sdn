@@ -12,7 +12,7 @@
 		<el-form-item label="ip地址 :">
 			<el-input v-model="formLabelAlign.ip" />
 		</el-form-item>
-		<el-form-item label="物理地址 :">
+		<el-form-item v-if="!topoState.editBool" label="物理地址 :">
 			<el-input v-model="formLabelAlign.mac" />
 		</el-form-item>
 	</el-form>
@@ -29,8 +29,6 @@ watch(
 	() => topoState.currentHost,
 	NewVal => {
 		formLabelAlign.name = NewVal.label;
-		formLabelAlign.ip = NewVal.ip;
-		formLabelAlign.mac = NewVal.mac;
 	},
 	{
 		deep: true

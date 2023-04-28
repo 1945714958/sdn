@@ -9,8 +9,8 @@
 		<component ref="form" :is="component"></component>
 		<template #footer>
 			<span class="dialog-footer">
-				<el-button @click="cancel">Cancel</el-button>
-				<el-button type="primary" @click="save"> Confirm </el-button>
+				<el-button @click="cancel">取消</el-button>
+				<el-button type="primary" @click="save">确定</el-button>
 			</span>
 		</template>
 	</el-dialog>
@@ -24,6 +24,7 @@ import controllerForm from "../formComponent/controllerForm.vue";
 import switchForm from "../formComponent/switchForm.vue";
 import portForm from "../formComponent/portForm.vue";
 import { TopoStore } from "@/stores/modules/topo";
+// import { AddHost, AddLink, DelHost, DelLink, AddSwitch, DelSwitch } from "@/api/modules/topo";
 
 const formMap = {
 	host: hostForm,
@@ -44,12 +45,13 @@ const edit = (itemParam, resolve) => {
 	item.value = itemParam;
 	callback.value = resolve;
 	centerDialogVisible.value = true;
-	console.log(itemParam);
 };
 const save = () => {
-	item.value.label = form.value.formLabelAlign.label;
-	console.log(form.value.formLabelAlign.label);
-
+	Object.keys(form.value.formLabelAlign).map(val => {
+		item.value[val] = form.value.formLabelAlign[val];
+	});
+	item.value.label = form.value.formLabelAlign.name;
+	setParam(item.value);
 	callback.value(item.value);
 	close();
 	ElMessage.success("保存成功！");
@@ -59,7 +61,6 @@ const cancel = () => {
 	close();
 };
 const close = () => {
-	setParam({});
 	centerDialogVisible.value = false;
 	item.value = null;
 	callback.value = null;
