@@ -127,9 +127,9 @@ let options = {
 			callback();
 			node.id = new Date().getTime();
 			topoState.addCurEdge(node);
-			if (topoState.CurLinksGet.length == 2) {
-				topoState.ADDLINKS();
-			}
+			// if (topoState.CurLinksGet.length == 2) {
+			// 	topoState.ADDLINKS();
+			// }
 			topoState.addEdges(node);
 		},
 		editNode: async (node, callback) => {
@@ -201,16 +201,8 @@ let options = {
 };
 const add = (type: string) => {
 	ElMessage.success("左键单机屏幕进行增加设备操作");
-	let label;
-	if (type == "host") {
-		label = topoState.currentHost.label;
-	} else if (type == "switch") {
-		label = topoState.currentSwitch.label;
-	} else if (type == "label") {
-		label = topoState.currentPort.label;
-	}
 	const id = new Date().getTime();
-	newItem = { id, label, group: type };
+	newItem = { id, group: type };
 	topoState.setEditBool(true);
 	network.addNodeMode();
 };
@@ -239,8 +231,8 @@ const flowtable = ref();
 const pid = ref(0);
 const dialog = ref();
 
-const changeShowFlowTable = () => {
-	flowtable.value.changeShow();
+const changeShowFlowTable = (pid: number) => {
+	flowtable.value.changeShow(pid);
 };
 
 const init = () => {
@@ -261,7 +253,8 @@ const init = () => {
 		const id = network.getNodeAt({ x: e.pointer.DOM.x, y: e.pointer.DOM.y });
 		id && network.selectNodes([id], true);
 		const res = topoState.NodesGet.map(item => item.id == id && item.group == "switch");
-		if (res.indexOf(true) != -1) changeShowFlowTable();
+		console.log(e);
+		if (res.indexOf(true) != -1) changeShowFlowTable(e.nodes[0]);
 
 		e.event.preventDefault();
 	});

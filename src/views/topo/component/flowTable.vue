@@ -15,21 +15,14 @@
 <script setup lang="ts">
 import { getFlowTable } from "@/api/modules/topo";
 import { ElMessage } from "element-plus";
-import { ref, defineProps, defineExpose } from "vue";
-
-type Prop = {
-	id: number;
-};
-
-const props = defineProps<Prop>();
-console.log(props);
+import { ref, defineExpose } from "vue";
 
 const table = ref(false);
 const gridData = ref([]);
-const changeShow = () => {
+const changeShow = (pid: number) => {
 	table.value = !table.value;
 	if (table.value) {
-		getFlowTable({ id: props.id })
+		getFlowTable({ id: pid })
 			.then((res: any) => {
 				gridData.value = res[Object.keys(res)[0]].map((item: any) => {
 					return {
