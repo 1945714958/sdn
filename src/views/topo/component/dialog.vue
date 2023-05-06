@@ -24,7 +24,6 @@ import controllerForm from "../formComponent/controllerForm.vue";
 import switchForm from "../formComponent/switchForm.vue";
 import portForm from "../formComponent/portForm.vue";
 import { TopoStore } from "@/stores/modules/topo";
-// import { AddHost, AddLink, DelHost, DelLink, AddSwitch, DelSwitch } from "@/api/modules/topo";
 
 const formMap = {
 	host: hostForm,

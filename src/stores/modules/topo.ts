@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { TopoState } from "../interface";
 import piniaPersistConfig from "@/config/piniaPersist";
-import { getHost, getSwitchs, getLinks, AddHost } from "@/api/modules/topo";
+import { getHost, getSwitchs, getLinks, DelHost, DelSwitch, DelLink } from "@/api/modules/topo";
 import { DataSet } from "vis-data/peer";
 export const TopoStore = defineStore({
 	id: "TopoStore",
@@ -15,7 +15,8 @@ export const TopoStore = defineStore({
 		currentHost: null,
 		currentSwitch: null,
 		currentPort: null,
-		currentLinks: []
+		stack: [],
+		deleteStack: []
 	}),
 	getters: {
 		editBoolGet: state => state.editBool,
@@ -27,22 +28,9 @@ export const TopoStore = defineStore({
 		currentPortGet: state => state.currentPort,
 		NodesGet: state => state.nodes,
 		EdgesGet: state => state.edges,
-		CurLinksGet: state => state.currentLinks
+		StackGet: state => state.stack
 	},
 	actions: {
-		ADDLINKS() {},
-		ADDHOST(edges) {
-			this.nodes.forEach(element => {
-				if (element.id == edges.from && element.group == "switch") {
-					const item = {
-						name: this.currentHost.name,
-						ip: this.currentHost.ip,
-						switchName: element.name
-					};
-					AddHost(item);
-				}
-			});
-		},
 		async getAll(callback) {
 			await Promise.all([getHost(), getSwitchs(), getLinks()]).then(values => {
 				const results: any = values.map(item => {
@@ -93,11 +81,42 @@ export const TopoStore = defineStore({
 		setEditBool(bool) {
 			this.editBool = bool;
 		},
-		addCurEdge(edge) {
-			this.currentLinks.add(edge);
+
+		delete(nodes) {
+			this.nodes.map(item => {
+				nodes.map(id => {
+					if (id == item.id) {
+						if (item.group == "switch") DelSwitch({ switchName: item.label });
+						else if (item.group == "port") {
+							[].push.call(this.deleteStack, item.label.split("-")[0]);
+							console.log(this.deleteStack);
+							if (this.deleteStack.length == 2) {
+								let name1 = this.deleteStack[0];
+								let name2 = this.deleteStack[1];
+								DelLink({ Name1: name1, Name2: name2 });
+								if (name1.startsWith("h")) {
+									DelHost({ name: name1 });
+								}
+								if (name2.startsWith("h")) {
+									DelHost({ name: name2 });
+								}
+								this.deleteStack = [];
+							}
+						}
+					}
+				});
+			});
 		},
-		clearCurEdge() {
-			this.currentLinks = [];
+		pushStack(node) {
+			console.log(this.stack.length);
+			if (this.stack.length >= 2) {
+				this.stack = [];
+				console.log(this.stack);
+			}
+			[].push.call(this.stack, node);
+		},
+		clearStack() {
+			this.stack = [];
 		}
 	},
 	persist: piniaPersistConfig("TopoStore")

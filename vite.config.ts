@@ -50,8 +50,8 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
 					rewrite: path => path.replace(/^\/api/, "")
 				},
 				"/topo": {
-					// target: "http://localhost:2345/api/",
-					target: "https://console-mock.apipost.cn/mock/c4d7861d-0b39-4bb2-c2a2-986f1b8770b5/api/", // easymock
+					target: "http://localhost:2345/api/",
+					// target: "https://console-mock.apipost.cn/mock/c4d7861d-0b39-4bb2-c2a2-986f1b8770b5/api/", // easymock
 					// target: "https://www.fastmock.site/mock/f81e8333c1a9276214bcdbc170d9e0a0", // fastmock
 					changeOrigin: true,
 					rewrite: path => path.replace(/^\/topo/, "")

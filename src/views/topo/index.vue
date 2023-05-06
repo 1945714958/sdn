@@ -54,16 +54,18 @@ function callback() {
 		edges.add({ id: idx(), from: i.intfsName, to: portId });
 	}
 	for (let i of topoState.SwitchesGet) {
-		const names = i.intfs[1].name.split("-");
-		nodes.add({ ...i, id: i.pid, label: names[0], group: "switch" });
-		edges.add({ id: idx(), from: 1, to: i.pid });
+		if (i.intfs.length > 1) {
+			const names = i.intfs[1].name.split("-");
+			nodes.add({ ...i, id: i.pid, label: names[0], group: "switch" });
+			edges.add({ id: idx(), from: 1, to: i.pid });
 
-		i.intfs.map(item => {
-			if (item.name != "lo") {
-				nodes.add({ ...item, id: item.name, label: item.name, group: "port" });
-				edges.add({ id: idx(), from: i.pid, to: item.name });
-			}
-		});
+			i.intfs.map(item => {
+				if (item.name != "lo") {
+					nodes.add({ ...item, id: item.name, label: item.name, group: "port" });
+					edges.add({ id: idx(), from: i.pid, to: item.name });
+				}
+			});
+		}
 	}
 	for (let i of topoState.LinksGet) {
 		let from = i.intf1.name;

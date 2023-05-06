@@ -43,6 +43,7 @@ import { HOME_URL } from "@/config/config";
 import { CircleClose, UserFilled } from "@element-plus/icons-vue";
 import type { ElForm } from "element-plus";
 // import md5 from "js-md5";
+import { sdpTopo, firstStart } from "@/api/modules/topo";
 
 const router = useRouter();
 const tabsStore = TabsStore();
@@ -76,7 +77,7 @@ const login = (formEl: FormInstance | undefined) => {
 			// 3.清空 tabs、keepAlive 保留的数据
 			tabsStore.closeMultipleTab();
 			keepAlive.setKeepAliveName();
-
+			Promise.all([sdpTopo(), firstStart()]);
 			// 4.跳转到首页
 			router.push(HOME_URL);
 			ElNotification({

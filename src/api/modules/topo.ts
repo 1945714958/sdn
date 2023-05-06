@@ -1,10 +1,10 @@
 import http from "@/api";
 import { form } from "../interface/form";
 export const AddHost = (params: form) => {
-	return http.get(`/topo/addhost/${params.name}/${params.ip}/${params.switchName}`);
+	return http.get(`/topo/addhost/${params.name}`);
 };
 export const DelHost = (params: form) => {
-	return http.get(`/topo/deletehost/${params.name}`);
+	return http.get(`/topo/delhost/${params.name}`);
 };
 export const AddLink = (params: form) => {
 	return http.get(`/topo/addlink/${params.Name1}/${params.Name2}`);
@@ -13,10 +13,10 @@ export const DelLink = (params: form) => {
 	return http.get(`/topo/dellink/${params.Name1}/${params.Name2}`);
 };
 export const AddSwitch = (params: form) => {
-	return http.get(`/topo/addswitch/${params.switchName}`, params);
+	return http.get(`/topo/addswitch/${params.switchName}`);
 };
 export const DelSwitch = (params: form) => {
-	return http.get(`/topo/deleteswitch/${params.switchName}`, params);
+	return http.get(`/topo/delswitch/${params.switchName}`);
 };
 export const defaultTopo = () => {
 	return http.get(`/topo/defaulttopo`);
@@ -45,4 +45,10 @@ export const getHost = () => {
 
 export const getLinks = () => {
 	return http.get(`/topo/links`);
+};
+export const sdpTopo = () => {
+	return http.get(`/topo/sdp_topo`);
+};
+export const firstStart = () => {
+	return http.get(`/topo/firststart`);
 };

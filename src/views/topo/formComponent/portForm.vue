@@ -25,6 +25,7 @@ watch(
 	() => topoState.currentPortGet,
 	NewVal => {
 		formLabelAlign.value.name = NewVal.label;
+		formLabelAlign.value.mac = NewVal.mac;
 	},
 	{
 		deep: true

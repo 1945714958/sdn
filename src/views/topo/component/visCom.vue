@@ -7,9 +7,9 @@
 <template>
 	<div class="container">
 		<el-row style="position: absolute; z-index: 111; left: 50%; transform: translateX(-50%)">
-			<el-button @click="add('controller')" type="primary" class="btn" title="控制器" size="large" circle>
+			<!-- <el-button @click="add('controller')" type="primary" class="btn" title="控制器" size="large" circle>
 				<img src="@/assets/network/controller.dark.svg" class="svg" alt="" />
-			</el-button>
+			</el-button> -->
 			<el-button @click="add('switch')" class="btn" type="success" title="交换机" size="large" circle>
 				<img src="@/assets/network/switch.dark.svg" class="svg" alt="" />
 			</el-button>
@@ -45,6 +45,7 @@ import { ElMessage } from "element-plus";
 import dialogView from "./dialog.vue";
 import flowTable from "./flowTable.vue";
 import { TopoStore } from "@/stores/modules/topo";
+import { AddHost, AddSwitch, AddLink } from "@/api/modules/topo";
 
 const topoState = TopoStore();
 console.log(topoState.NodesGet);
@@ -116,23 +117,41 @@ let options = {
 		enabled: true,
 		initiallyActive: false,
 		addNode: async (node, callback) => {
+			topoState.setEditBool(true);
 			await editer(newItem);
 			if (editBool.value) {
 				topoState.addNodes(newItem);
+				if (newItem.group == "host") {
+					AddHost({ name: newItem.label });
+					topoState.clearStack();
+					topoState.pushStack(newItem);
+				} else if (newItem.group == "switch") {
+					AddSwitch({ switchName: newItem.label });
+					topoState.pushStack(newItem);
+				}
 			}
-			topoState.setEditBool(false);
 			callback();
 		},
 		addEdge: async (node, callback) => {
 			callback();
 			node.id = new Date().getTime();
-			topoState.addCurEdge(node);
-			// if (topoState.CurLinksGet.length == 2) {
-			// 	topoState.ADDLINKS();
-			// }
+			console.log(topoState.StackGet);
+			if (topoState.StackGet.length == 2) {
+				if (topoState.StackGet[0].group == "host") {
+					AddLink({ Name1: topoState.StackGet[0].label, Name2: topoState.StackGet[1].label });
+				} else {
+					AddLink({ Name1: topoState.StackGet[1].label, Name2: topoState.StackGet[0].label });
+				}
+				topoState.clearStack();
+			}
 			topoState.addEdges(node);
 		},
 		editNode: async (node, callback) => {
+			topoState.setEditBool(false);
+			console.log(node);
+			if (node.group == "switch") {
+				topoState.pushStack(node);
+			}
 			await editer(node);
 			callback();
 		},
@@ -212,6 +231,8 @@ const addEdge = () => {
 	network.addEdgeMode();
 };
 const remove = () => {
+	const { nodes } = network.getSelection();
+	topoState.delete(nodes);
 	network.deleteSelected();
 };
 
@@ -231,8 +252,8 @@ const flowtable = ref();
 const pid = ref(0);
 const dialog = ref();
 
-const changeShowFlowTable = (pid: number) => {
-	flowtable.value.changeShow(pid);
+const changeShowFlowTable = (dpid: number) => {
+	flowtable.value.changeShow(dpid);
 };
 
 const init = () => {
@@ -252,9 +273,17 @@ const init = () => {
 	network.on("oncontext", e => {
 		const id = network.getNodeAt({ x: e.pointer.DOM.x, y: e.pointer.DOM.y });
 		id && network.selectNodes([id], true);
-		const res = topoState.NodesGet.map(item => item.id == id && item.group == "switch");
+		let dpid;
+		const res = topoState.NodesGet.map(item => {
+			if (item.pid == e.nodes[0]) {
+				dpid = item.dpid;
+			}
+			return item.id == id && item.group == "switch";
+		});
 		console.log(e);
-		if (res.indexOf(true) != -1) changeShowFlowTable(e.nodes[0]);
+		if (res.indexOf(true) != -1) {
+			changeShowFlowTable(dpid);
+		}
 
 		e.event.preventDefault();
 	});

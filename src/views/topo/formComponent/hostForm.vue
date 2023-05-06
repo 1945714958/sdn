@@ -9,7 +9,7 @@
 		<el-form-item label="主机名称 :">
 			<el-input v-model="formLabelAlign.name" />
 		</el-form-item>
-		<el-form-item label="ip地址 :">
+		<el-form-item v-if="!topoState.editBool" label="ip地址 :">
 			<el-input v-model="formLabelAlign.ip" />
 		</el-form-item>
 		<el-form-item v-if="!topoState.editBool" label="物理地址 :">
