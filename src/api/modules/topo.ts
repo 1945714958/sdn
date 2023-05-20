@@ -52,3 +52,9 @@ export const sdpTopo = () => {
 export const firstStart = () => {
 	return http.get(`/topo/firststart`);
 };
+export const server = () => {
+	return http.get(`/topo/server`);
+};
+export const client = host => {
+	return http.get(`/topo/server/${host}`);
+};

@@ -9,8 +9,8 @@
 		<component ref="form" :is="component"></component>
 		<template #footer>
 			<span class="dialog-footer">
-				<el-button @click="cancel">取消</el-button>
-				<el-button type="primary" @click="save">确定</el-button>
+				<el-button v-if="topoState.editBool" @click="cancel">取消</el-button>
+				<el-button v-if="topoState.editBool" type="primary" @click="save">确定</el-button>
 			</span>
 		</template>
 	</el-dialog>

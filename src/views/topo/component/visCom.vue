@@ -25,6 +25,9 @@
 			<el-button @click="remove" class="btn" type="danger" size="large" title="删除选择" circle>
 				<Delete class="svg" />
 			</el-button>
+			<el-button class="btn" type="danger" size="large" title="删除选择" circle>
+				<Comment class="svg" />
+			</el-button>
 		</el-row>
 		<dialog-view ref="dialog" />
 		<flow-table ref="flowtable" :id="pid" />
@@ -35,7 +38,7 @@
 <script lang="ts" setup>
 import { Network } from "vis-network/peer";
 import { ref, defineExpose } from "vue";
-import { Delete, Sort } from "@element-plus/icons-vue";
+import { Delete, Sort, Comment } from "@element-plus/icons-vue";
 
 import controllerImgLight from "@/assets/network/controller.dark.svg";
 import hostImgLight from "@/assets/network/host.dark.svg";
@@ -70,9 +73,9 @@ let options = {
 	layout: {
 		hierarchical: {
 			enabled: true, //切换分层布局系统
-			levelSeparation: 200, //不同级别之间的距离。
-			nodeSpacing: 250, // 自由轴上节点之间的最小距离,这仅适用于初始布局。如果启用物理，则节点距离将存在有效的节点距离。
-			treeSpacing: 250, //不同树木之间的距离（独立网络）
+			levelSeparation: 150, //不同级别之间的距离。
+			nodeSpacing: 200, // 自由轴上节点之间的最小距离,这仅适用于初始布局。如果启用物理，则节点距离将存在有效的节点距离。
+			treeSpacing: 200, //不同树木之间的距离（独立网络）
 			blockShifting: true, // 每个节点都会检查空白，并尽可能地将它的分支与它一起移动，并在任何级别上考虑nodeSpacing
 			edgeMinimization: true, // 每个节点将尝试沿其自由轴移动以减少其边缘的总长度
 			parentCentralization: true, // 如果为true，则布局算法完成后，父节点将再次居中。
@@ -83,15 +86,16 @@ let options = {
 	nodes: {
 		// Invisible border, 0 makes selected border dissapear
 		borderWidth: 0.0001,
-		borderWidthSelected: 2,
+		borderWidthSelected: 1,
 		font: {
 			align: "center",
 			face: "Source Sans Pro",
 			strokeWidth: 0,
-			color: "white"
+			color: "white",
+			size: 20
 		},
 		shapeProperties: {
-			borderRadius: 6,
+			borderRadius: 20,
 			useBorderWithImage: true
 		},
 		scaling: {
@@ -107,7 +111,8 @@ let options = {
 		font: {
 			align: "top",
 			face: "Source Sans Pro",
-			strokeWidth: 0
+			strokeWidth: 0,
+			size: 25
 		}
 	},
 	interaction: {
@@ -162,13 +167,13 @@ let options = {
 	groups: {
 		controller: {
 			shape: "image",
-			size: 25,
+			size: 35,
 			image: controllerImgLight,
 			color: {
-				border: "#075Cff",
-				background: "#141414",
+				border: "#E4F80D",
+				background: "#1B8FFC",
 				hover: {
-					background: "#141414"
+					background: "#1B8FFC"
 				}
 			}
 		},
@@ -182,37 +187,37 @@ let options = {
 		},
 		host: {
 			shape: "image",
-			size: 25,
+			size: 35,
 			image: hostImgLight,
 			color: {
 				border: "#11ffff",
-				background: "#141414",
+				background: "#1B8FFC",
 				hover: {
-					background: "#141414"
+					background: "#1B8FFC"
 				}
 			}
 		},
 		port: {
 			shape: "image",
-			size: 12,
+			size: 20,
 			image: portImgLight,
 			color: {
-				border: "#00706C",
-				background: "#141414",
+				border: "#000000",
+				background: "#1B8FFC",
 				hover: {
-					background: "#141414"
+					background: "#1B8FFC"
 				}
 			}
 		},
 		switch: {
 			shape: "image",
-			size: 25,
+			size: 35,
 			image: switchImgLight,
 			color: {
 				border: "#FB6800",
-				background: "#141414",
+				background: "#1B8FFC",
 				hover: {
-					background: "#141414"
+					background: "#1B8FFC"
 				}
 			}
 		}
@@ -299,12 +304,15 @@ defineExpose({
 	height: 100%;
 	position: relative;
 }
+
 .child {
 	width: 100%;
 	height: 100%;
 }
+
 .btn {
 	position: relative;
+
 	.svg {
 		width: 60%;
 		position: absolute;
